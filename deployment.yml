@@ -1,0 +1,47 @@
+apiVersion: apps/v1 # 정의한 Object의 API 버전
+kind: Deployment # 쿠버 리소스의 종류
+metadata: # 부가정보, 라벨/이름
+  labels:
+    app: joel-was
+  name: joel-was
+spec:
+  replicas: 1
+  minReadySeconds: 0
+  selector: # 라벨이 동일한 파드를 관리하겠다
+    matchLabels:
+      app: joel-was
+  strategy:
+    rollingUpdate:
+      maxSurge: 25% # 전체 POD가 max로 떠올라도 125% 까지만 허용해서 올리겠다는 다짐
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: joel-was
+    spec:
+      containers: # 구동하려는 컨테이너 명시해줄 것
+        - image: idock.daumkakao.io/onboarding2023/joel.jo
+          imagePullPolicy: "Always"
+          ports:
+            - containerPort: 8080
+          name: was
+          #          resources:
+          #            limits:
+          #              cpu: 100m
+          #              memory: 100Mi
+          #            requests:
+          #              cpu: 100m
+          #              memory: 100Mi
+#          readinessProbe: # 준비 되었는지 확인
+#            httpGet:
+#              path: /
+#              port: 8080
+#            initialDelaySeconds: 5 # 몇 초 있다가 probe 시작할건지
+#            periodSeconds: 10 # 실패시 몇 초 있다가 검사할건지
+#          livenessProbe: # 살았나 죽었나 탐색
+#            httpGet:
+#              path: /
+#              port: 8080
+#            initialDelaySeconds: 15
+#            periodSeconds: 20
